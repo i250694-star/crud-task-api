@@ -7,6 +7,9 @@
   "pendingChangedFiles": [
     "d:\\API\\.codegraphy",
     "d:\\API\\.gitignore",
-    "d:\\API\\.git"
+    "d:\\API\\.git",
+    "d:\\API\\main.py",
+    "d:\\API\\__pycache__",
+    "d:\\API\\__pycache__\\main.cpython-314.pyc"
   ]
 }
