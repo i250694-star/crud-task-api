@@ -5,12 +5,6 @@
   "pluginSignature": null,
   "settingsSignature": null,
   "pendingChangedFiles": [
-    "d:\\API\\.codegraphy",
-    "d:\\API\\.gitignore",
-    "d:\\API\\.git",
-    "d:\\API\\main.py",
-    "d:\\API\\__pycache__",
-    "d:\\API\\__pycache__\\main.cpython-314.pyc",
-    "d:\\API\\__pycache__\\main.cpython-314.pyc.1903638323856"
+    "d:\\API\\.gitignore"
   ]
 }
