@@ -5,6 +5,8 @@
   "pluginSignature": null,
   "settingsSignature": null,
   "pendingChangedFiles": [
-    "d:\\API\\.gitignore"
+    "d:\\API\\.gitignore",
+    "d:\\API\\README.md",
+    "d:\\API\\swagger-screenshot.png"
   ]
 }
