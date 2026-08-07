@@ -8,6 +8,7 @@
   "pendingChangedFiles": [
     "d:\\API\\__pycache__\\main.cpython-314.pyc",
     "d:\\API\\tasks.db",
-    "d:\\API\\main.py"
+    "d:\\API\\main.py",
+    "d:\\API\\tasks.db-journal"
   ]
 }
