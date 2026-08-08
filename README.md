@@ -87,7 +87,6 @@ Every endpoint is listed and testable via "Try it out" at `/docs`.
 ## Note on persistence
 
 Unlike the earlier in-memory version, tasks now survive a server restart, since they live in `tasks.db` on disk instead of a Python list in memory. The database file and table are created automatically if missing, and the 3 example tasks are only seeded the first time (checked by counting existing rows before inserting).
-
 ## Stage 7 — AI vs me
 
 I gave an AI the following prompt and compared its generated API against my own hand-built version.
