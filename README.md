@@ -87,6 +87,7 @@ Every endpoint is listed and testable via "Try it out" at `/docs`.
 ## Note on persistence
 
 Unlike the earlier in-memory version, tasks now survive a server restart, since they live in `tasks.db` on disk instead of a Python list in memory. The database file and table are created automatically if missing, and the 3 example tasks are only seeded the first time (checked by counting existing rows before inserting).
+
 ## Stage 7 — AI vs me
 
 I gave an AI the following prompt and compared its generated API against my own hand-built version.
@@ -110,3 +111,32 @@ I gave an AI the following prompt and compared its generated API against my own 
 **What it got wrong or silently decided:** it started with an empty task list instead of pre-filled example tasks, and it used a running id counter instead of `max(existing ids) + 1` — meaning ids are never reused after a delete, unlike mine. Neither of these was specified in my prompt, so the AI just made a reasonable choice on its own.
 
 **What my prompt forgot to specify:** I never mentioned seed/example data, or what should happen to task ids after a delete. Both silent decisions turned out reasonable, but it showed me my specification wasn't as complete as I thought it was.
+
+## Stage 6 — AI vs me (SQLite migration)
+
+I gave an AI the following prompt and compared its generated database code against my own hand-built migration.
+
+**Prompt used:**
+
+> Build a REST API for managing a to-do list using Python and FastAPI, backed by SQLite instead of memory.
+>
+> It needs a table called `tasks` with columns: `id` (integer primary key), `title` (text, not null), `done` (boolean, default false).
+>
+> On startup, it should create the table if missing, and seed 3 example tasks only if the table is empty.
+>
+> Endpoints:
+> - `GET /` and `GET /health` for basic API info and a status check
+> - `GET /tasks` and `GET /tasks/{id}`, returning status 404 if the id doesn't exist
+> - `POST /tasks`, validating that `title` is present and non-empty, returning status 400 if missing and 201 on success
+> - `PUT /tasks/{id}` and `DELETE /tasks/{id}`, with the same 404/400 rules, and 204 on successful delete
+>
+> All queries should use parameterized placeholders instead of pasting values directly into SQL strings, to stay safe from injection.
+
+**What the AI did better:** it wrapped the three-row seed insert in a single transaction, so if the second or third insert failed partway through, the first wouldn't be left stranded in the table. My own `init_db()` runs each insert separately with one `commit()` at the end, so a crash mid-seed could theoretically leave a partial seed. It also used context managers (`with sqlite3.connect(...) as conn`) instead of manually calling `conn.close()` every time, which means it can't accidentally leak an open connection if an error happens before I reach my `conn.close()` line — a real gap in my version.
+
+**What it got wrong or silently decided:** it added a `UNIQUE` constraint on `title`, meaning two tasks can never share the same name. I never asked for that, and it's arguably wrong for a to-do list — you might genuinely want two separate "buy milk" tasks on different days. It also picked `SQLModel` instead of raw `sqlite3`, which pulls in an extra dependency I didn't ask for and changes how every query is written.
+
+**What my prompt forgot to specify:** I never said whether duplicate titles should be allowed, so the AI just picked a rule on its own. I also never specified which SQLite library to use, so it defaulted to the more "modern" ORM option instead of the plain `sqlite3` I actually built with — a reminder that "using Python and FastAPI" wasn't precise enough to lock in the same tools I used.
+
+**One rematch:** I added "use the plain sqlite3 standard library, not an ORM, and don't add any constraints I didn't explicitly ask for" to the prompt and regenerated. That single addition removed the unwanted `UNIQUE` constraint and brought the code back in line with raw `sqlite3`, much closer to my own implementation — proof that the first version's extra decisions were entirely from missing specificity, not from the AI guessing randomly.
+
